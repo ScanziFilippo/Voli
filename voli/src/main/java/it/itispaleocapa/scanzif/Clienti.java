@@ -91,22 +91,28 @@ public class Clienti
     public void salvaSuFile(){
         try{
             FileOutputStream file = new FileOutputStream("clienti.txt");
-            ObjectOutputStream out = new ObjectOutputStream(file);
-            out.writeObject(clienti);
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(file));
+            for(Map.Entry<String, Cliente> entry : clienti.entrySet()){
+                out.write(entry.getValue().getCodice() + " " + entry.getValue().getCognome() + " " + entry.getValue().getNome() + " " + entry.getValue().getNazioneDiNascita() + " " + entry.getValue().getCittaDiNascita() + " " + entry.getValue().getDataDiNascita().getYear() + " " + entry.getValue().getDataDiNascita().getMonthValue() + " " + entry.getValue().getDataDiNascita().getDayOfMonth());
+                out.newLine();
+            }
             out.close();
-            file.close();
         }catch(IOException e){
             e.printStackTrace();
         }
     }
     
     public void leggiDaFile() throws ClassNotFoundException{
+        clienti.clear();
         try{
             FileInputStream file = new FileInputStream("clienti.txt");
-            ObjectInputStream in = new ObjectInputStream(file);
-            clienti = (HashMap<String, Cliente>) in.readObject();
+            BufferedReader in = new BufferedReader(new InputStreamReader(file));
+            String line;
+            while((line = in.readLine()) != null){
+                String[] splittedLine = line.split(" ");
+                clienti.put(splittedLine[0], new Cliente(splittedLine[1], splittedLine[2], splittedLine[3], splittedLine[4], LocalDate.of(Integer.parseInt(splittedLine[5]), Integer.parseInt(splittedLine[6]), Integer.parseInt(splittedLine[7]))));
+            }
             in.close();
-            file.close();
         }catch(IOException e){
             e.printStackTrace();
         }

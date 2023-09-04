@@ -245,7 +245,7 @@ public class AppTest
         assertEquals(1, voli.cercaVoloConCostoDelVolo(200.0).size());
     }
     @Test
-    public void salvaEImportaClientiSuFile(){
+    public void salvaEImportaClientiSuFile() throws ClassNotFoundException{
         Clienti clienti = new Clienti();
         Cliente cliente1 = new Cliente("Scanzi", "Filippo", "Italia", "Bergamo", LocalDate.of(2005, 4, 16));
         clienti.aggiungi(cliente1);
@@ -253,11 +253,90 @@ public class AppTest
         Cliente cliente2 = new Cliente ("Volpi", "Stefano", "Italia", "Bergamo", LocalDate.of(2005, 6, 17));
         clienti.aggiungi(cliente2);
         assertEquals(2, clienti.length());
-        try {
-            clienti.leggiDaFile();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        clienti.leggiDaFile();
         assertEquals(1, clienti.length());
+    }
+    @Test
+    public void salvaEImportaVoliSuFile() throws ClassNotFoundException{
+        Voli voli = new Voli();
+        Volo volo1 = new Volo("Bergamo", "Roma", LocalDate.of(2023, 9, 3), LocalTime.of(12, 29), LocalTime.of(14, 29), 100, 100.0);
+        voli.aggiungi(volo1);
+        voli.salvaSuFile();
+        Volo volo2 = new Volo("Milano", "Roma", LocalDate.of(2023, 9, 4), LocalTime.of(12, 30), LocalTime.of(14, 30), 200, 200.0);
+        voli.aggiungi(volo2);
+        assertEquals(2, voli.length());
+        voli.leggiDaFile();
+        assertEquals(1, voli.length());
+    }
+    @Test
+    public void creaPrenotazione(){
+        Prenotazione prenotazione = new Prenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0", 2, 20.0);
+        assertEquals("ScaFil2005416ItaBer", prenotazione.getCodiceCliente());
+        assertEquals("BerRom20239312301430100100.0", prenotazione.getCodiceVolo());
+        assertEquals(2, prenotazione.getBagagli());
+        assertEquals(20.0, prenotazione.getPesoMassimoComplessivo(), 0.0);
+    }
+    @Test
+    public void modificaPrenotazione(){
+        Prenotazione prenotazione = new Prenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0", 2, 20.0);
+        prenotazione.setBagagli(3);
+        prenotazione.setPesoMassimoComplessivo(30.0);
+        assertEquals(3, prenotazione.getBagagli());
+        assertEquals(30.0, prenotazione.getPesoMassimoComplessivo(), 0.0);
+    }
+    @Test
+    public void creaPrenotazioni(){
+        Prenotazioni prenotazioni = new Prenotazioni();
+        Prenotazione prenotazione = new Prenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0", 2, 20.0);
+        prenotazioni.aggiungi(prenotazione);
+        assertEquals(prenotazione, prenotazioni.cercaPrenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0"));
+    }
+    @Test
+    public void modificaPrenotazioni(){
+        Prenotazioni prenotazioni = new Prenotazioni();
+        Prenotazione prenotazione = new Prenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0", 2, 20.0);
+        prenotazioni.aggiungi(prenotazione);
+        prenotazioni.setBagagli(prenotazione, 3);
+        prenotazioni.setPesoMassimoComplessivo(prenotazione, 30.0);
+        assertEquals(3, prenotazioni.cercaPrenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0").getBagagli());
+        assertEquals(30.0, prenotazioni.cercaPrenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0").getPesoMassimoComplessivo(), 0.0);
+    }
+    @Test
+    public void rimuoviPrenotazioni(){
+        Prenotazioni prenotazioni = new Prenotazioni();
+        Prenotazione prenotazione = new Prenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0", 2, 20.0);
+        prenotazioni.aggiungi(prenotazione);
+        assertEquals(prenotazione, prenotazioni.cercaPrenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0"));
+        prenotazioni.rimuovi(prenotazione);
+        assertEquals(null, prenotazioni.cercaPrenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0"));
+    }
+    @Test
+    public void cercaPrenotazione(){
+        Prenotazioni prenotazioni = new Prenotazioni();
+        Prenotazione prenotazione = new Prenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0", 2, 20.0);
+        prenotazioni.aggiungi(prenotazione);
+        assertEquals(prenotazione, prenotazioni.cercaPrenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0"));
+    }
+    @Test
+    public void cercaPrenotazioneConCodiceCliente(){
+        Prenotazioni prenotazioni = new Prenotazioni();
+        Prenotazione prenotazione1 = new Prenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0", 2, 20.0);
+        Prenotazione prenotazione2 = new Prenotazione("ScaVol2005416ItaBer", "BerRom20239312301430100100.0", 2, 20.0);
+        Prenotazione prenotazione3 = new Prenotazione("ScaVol2005416ItaBer", "RomBer20239312301430100100.0", 2, 20.0);
+        prenotazioni.aggiungi(prenotazione1);
+        prenotazioni.aggiungi(prenotazione2);
+        prenotazioni.aggiungi(prenotazione3);
+        assertEquals(2, prenotazioni.cercaPrenotazioneConCodiceCliente("ScaVol2005416ItaBer").size());
+    }
+    @Test
+    public void cercaPrenotazioneConCodiceVolo(){
+        Prenotazioni prenotazioni = new Prenotazioni();
+        Prenotazione prenotazione1 = new Prenotazione("ScaFil2005416ItaBer", "BerRom20239312301430100100.0", 2, 20.0);
+        Prenotazione prenotazione2 = new Prenotazione("ScaVol2005416ItaBer", "BerRom20239312301430100100.0", 2, 20.0);
+        Prenotazione prenotazione3 = new Prenotazione("SteVol2005416ItaBer", "BerRom20239312301430100100.0", 2, 20.0);
+        prenotazioni.aggiungi(prenotazione1);
+        prenotazioni.aggiungi(prenotazione2);
+        prenotazioni.aggiungi(prenotazione3);
+        assertEquals(3, prenotazioni.cercaPrenotazioneConCodiceVolo("BerRom20239312301430100100.0").size());
     }
 }

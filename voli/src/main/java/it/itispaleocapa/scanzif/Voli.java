@@ -115,24 +115,35 @@ public class Voli
     public void salvaSuFile(){
         try{
             FileOutputStream file = new FileOutputStream("voli.txt");
-            ObjectOutputStream out = new ObjectOutputStream(file);
-            out.writeObject(voli);
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(file));
+            for(Map.Entry<String, Volo> entry : voli.entrySet()){
+                out.write(entry.getValue().getCodice() + " " + entry.getValue().getAeroportoDiPartenza() + " " + entry.getValue().getAeroportoDiArrivo() + " " + entry.getValue().getDataDelVolo().getYear() + " " + entry.getValue().getDataDelVolo().getMonthValue() + " " + entry.getValue().getDataDelVolo().getDayOfMonth() + " " + entry.getValue().getOraDiPartenza().getHour() + " " + entry.getValue().getOraDiPartenza().getMinute() + " " + entry.getValue().getOraDiArrivo().getHour() + " " + entry.getValue().getOraDiArrivo().getMinute() + " " + entry.getValue().getNumeroDiPosti() + " " + entry.getValue().getCostoDelVolo());
+                out.newLine();
+            }
             out.close();
-            file.close();
         }catch(IOException e){
             e.printStackTrace();
         }
     }
 
     public void leggiDaFile() throws ClassNotFoundException{
+        voli.clear();
         try{
             FileInputStream file = new FileInputStream("voli.txt");
-            ObjectInputStream in = new ObjectInputStream(file);
-            voli = (HashMap<String, Volo>) in.readObject();
+            BufferedReader in = new BufferedReader(new InputStreamReader(file));
+            String line;
+            while((line = in.readLine()) != null){
+                String[] lineSplit = line.split(" ");
+                Volo volo = new Volo(lineSplit[1], lineSplit[2], LocalDate.of(Integer.parseInt(lineSplit[3]), Integer.parseInt(lineSplit[4]), Integer.parseInt(lineSplit[5])), LocalTime.of(Integer.parseInt(lineSplit[6]), Integer.parseInt(lineSplit[7])), LocalTime.of(Integer.parseInt(lineSplit[8]), Integer.parseInt(lineSplit[9])), Integer.parseInt(lineSplit[10]), Double.parseDouble(lineSplit[11]));
+                voli.put(lineSplit[0], volo);
+            }
             in.close();
-            file.close();
         }catch(IOException e){
             e.printStackTrace();
         }
+    }
+
+    public int length(){
+        return voli.size();
     }
 }
