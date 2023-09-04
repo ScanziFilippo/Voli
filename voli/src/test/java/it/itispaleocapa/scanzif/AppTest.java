@@ -338,5 +338,6 @@ public class AppTest
         prenotazioni.aggiungi(prenotazione2);
         prenotazioni.aggiungi(prenotazione3);
         assertEquals(3, prenotazioni.cercaPrenotazioneConCodiceVolo("BerRom20239312301430100100.0").size());
+        
     }
 }
